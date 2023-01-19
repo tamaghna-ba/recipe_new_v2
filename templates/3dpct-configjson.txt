@@ -1,0 +1,251 @@
+{
+    {% set supported_tools = ['cuboid', 'polyline', 'polygon'] %}
+    {% set enabled_tools = [] %}
+    {% set class_without_association = [] %}
+    "node": {
+        "timeManagement": {
+            "syncMaxWait": 60,
+            "timeout": 900
+        },
+        "taskTraversal": {
+            "skipCount": 0
+        },
+        "localCache": {
+            "windowsize": 2000
+        },
+        "constraints": [],
+        "attributes": [
+            {% set first_1 = false %}
+            {% for attr in attributes %}
+                {% if attr.settings_type === 'batch' %}
+                    {% if first_1 === false %}
+                    {% set first_1 = true %}
+                    "<attributes.{{ loop.index }}>"
+                    {% else %}
+                    ,"<attributes.{{ loop.index }}>"
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        ],
+        "timer": {
+            "enabled": true,
+            "timeAlloted": 3600,
+            "autoSubmit": true
+        },
+        "instructions": [
+            {% for inst in additional_info.instructions %}
+                {
+                    "type": "{{ inst.type }}",
+                    "content": "{{ inst.content }}"
+                }     
+            {% if not loop.last %},{% endif %}
+            {% endfor %}
+        ],
+        "sequential": {
+            "timeline": true,
+            "interpolation": true
+        },
+        "reference": {
+            "egoPerspective": true,
+            "superImpose2D": true,
+            "toggleFullScreen": true,
+            "objectLine": true
+        }
+    },
+    "constraints": {
+        "1": {
+            "coveragePercentage": 90
+        }
+    },
+    "task": {
+        "rubricFeedback": {
+            "rubricEditable": true,
+            "entity": []
+        },
+        "attributes": [
+            {% set first_2 = false %}
+            {% for attr in attributes %}   
+                {% if attr.settings_type === 'task' %}
+                    {% if first_2 === false %}
+                    {% set first_2 = true %}
+                    "<attributes.{{ loop.index }}>"
+                    {% else %}
+                    ,"<attributes.{{ loop.index }}>"
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        ],
+        "constraints": [
+        ],
+        "ml_assistance": {
+            "enable": false,
+            "batchSize": 0,
+            "algorithm": []
+        },
+        "reference": []
+    },
+    "attributes": {
+        {% for attr in attributes %}
+            "{{ loop.index }}": {
+                "label": "{{ attr.attr_display_name }}",
+                "key": "{{ attr.attr_name }}",
+                "htmlElement": "{{ attr.attr_type }}",
+                "dataPlaceholderText": "--Select from options--",
+                "default": "{{ attr.defaultText if attr.attr_type === 'text' else attr.defaultValue }}",
+                {% if (attr.attr_type === 'select') or (attr.attr_type === 'multiselect') %}
+                "values": {
+                    {% for attrv in attr.attr_value %}
+                        "{{ loop.index }}": {
+                            "key": "{{ attrv.value }}",
+                            "label": "{{ attrv.text if attrv.text else attrv.value }}",
+                            "abbreviation": "{{ attrv.abbreviation }}",
+                            "children": []
+                        }
+                    {% if not loop.last %},{% endif %}
+                    {% endfor %}
+                },
+                {% endif %}
+                "optional": {{ attr.isOptional }}
+            }
+        {% if not loop.last %},{% endif %}
+        {% endfor %}
+    },
+    "classes": {
+        {% for c in classes %}
+        "{{ loop.index }}": {
+            "category": "Category{{ loop.index }}",
+            "name": "{{ c.class_name }}",
+            "text": "{{ c.class_display_name if c.class_display_name else c.class_name }}",
+            "abbreviation": "{{ c.class_abbreviation_name }}"
+        }
+        {% if not loop.last %},{% endif %}
+        {% endfor %}
+    },
+    {% set ccounter = 1 %}
+    "associations": {
+        {% for c in classes %}
+            {% set found = false %}
+            {% for assoc in associations %}
+                {% if assoc.destination === c.class_id %}
+		    {% set found = true %}
+                    {% if ccounter !== 1 %}, {% endif %}
+                    "{{ ccounter }}": {
+                        "name": "{{ c.class_name }}",
+                        "class": "<classes.{{ ccounter }}>",
+                        "color": "{{ c.class_color }}",
+                        "instance": "{{ c.hasInstance }}",
+                        "shape": [
+                            {% set first_3 = false %}
+                            {% for ct in c.class_marking_tool %}
+                                {% for st in supported_tools %}
+                                    {% if ct === st %}
+                                        {% if not st in enabled_tools %}
+                                            {% set enabled_tools = (enabled_tools.push(st), enabled_tools) %}
+                                        {% endif %}
+                                        {% if first_3 === false %}
+                                            {% set first_3 = true %}
+                                            "<tool.drawable.{{ loop.index }}>"
+                                        {% else %}
+                                            ,"<tool.drawable.{{ loop.index }}>"
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        ],
+                        {% set first_4 = false %}
+                        "attributes": [
+                            {% set acounter = 1 %}
+                            {% for attr in attributes %}
+                                {% if assoc.source === attr.attr_id or attr.settings_type === 'global' %}
+                                    {% if first_4 === false %}
+                                        {% set first_4 = true %}
+                                        "<attributes.{{ acounter }}>"
+                                    {% else %}
+                                        ,"<attributes.{{ acounter }}>"
+                                    {% endif %}
+                                {% endif %}
+                                {% set acounter = acounter + 1 %}
+                            {% endfor %}
+                        ]
+                        {% set ccounter = ccounter + 1 %}
+                    }
+                {% endif %}
+            {% endfor %}
+            {% if found === false %}
+                {% set class_without_association = (class_without_association.push(c), class_without_association) %}
+            {% endif %}
+        {% endfor %}
+        {% set len_of_entry_without_assocation = class_without_association | length	%}
+        {% set len_of_all_classes = classes | length	%}
+        {% if len_of_entry_without_assocation > 0 and len_of_entry_without_assocation != len_of_all_classes %} , {% endif %}
+        {% for c in class_without_association %}
+            "{{ ccounter }}": {
+                "name": "{{ c.class_name }}",
+                "class": "<classes.{{ ccounter }}>",
+                "color": "{{ c.class_color }}",
+                "instance": "{{ c.hasInstance }}",
+                "shape": [
+                    {% set first_3 = false %}
+                    {% for ct in c.class_marking_tool %}
+                        {% for st in supported_tools %}
+                            {% if ct === st %}
+                                {% if not st in enabled_tools %}
+                                    {% set enabled_tools = (enabled_tools.push(st), enabled_tools) %}
+                                {% endif %}
+                                {% if first_3 === false %}
+                                    {% set first_3 = true %}
+                                    "<tool.drawable.{{ loop.index }}>"
+                                {% else %}
+                                    ,"<tool.drawable.{{ loop.index }}>"
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                ],
+                {% set first_4 = false %}
+                "attributes": [
+                    {% set acounter = 1 %}
+                    {% for attr in attributes %}
+                        {% if attr.settings_type === 'global' %}
+                            {% if first_4 === false %}
+                                {% set first_4 = true %}
+                                "<attributes.{{ acounter }}>"
+                            {% else %}
+                                ,"<attributes.{{ acounter }}>"
+                            {% endif %}
+                        {% endif %}
+                        {% set acounter = acounter + 1 %}
+                    {% endfor %}
+                ]
+                {% set ccounter = ccounter + 1 %}
+            }
+            {% if not loop.last %}, {% endif %}
+        {% endfor %}
+    },
+    "relationship": [],
+    "tool": {
+        "name": "pct",
+        "crosshair": {},
+        "customDrawables": {},
+        "drawable": {
+            {% for t in supported_tools %}
+                "{{ loop.index }}": {
+                "type": "{{ t }}",
+                {% if t in enabled_tools %}
+                    "enable": true
+                {% else %}
+                    "enable": false
+                {% endif %}
+            }
+            {% if not loop.last %},
+            {% endif %}
+            {% endfor %}
+        },
+        "autofit": {
+            "enable": true
+        },
+        "grid": {},
+        "undoRedo": true,
+        "loadingPage": true
+    }
+}
