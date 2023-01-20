@@ -4,13 +4,13 @@ exports.getValidate = {
     fetchRecipe: async (request) => {
         const schema = Joi.object().keys({
             solutionId: Joi.string().required(),
-            recipeId: Joi.string().optional(),
+            config_code: Joi.string().optional(),
             mode: Joi.string().optional(),
         });
         if (!schema.validate(request.payload).error) {
             return {
                 solutionId: request.params.solutionId || null,
-                recipeId: request.params.recipeId || null,
+                config_code: request.params.config_code || null,
                 mode: request.query.mode || null,
             };
         }
@@ -45,9 +45,9 @@ exports.postValidate = {
             attributes: Joi.array().optional(),
             associations: Joi.array().optional()
         });
-        if (!schema.validate(request.payload).error) {
+        if (!schema.validate(request.payload).error && request.params.solutionId) {
             return request.payload;
         }
-        return {code: 422, error: true};
+        return {code: 422, error: true, message: "validation error"};
     }
 }

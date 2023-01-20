@@ -11,7 +11,7 @@ const routes = function() {
         },
         {
             method: 'GET',
-            path:'/solutions/{solutionId}/recipe/{recipeId}',
+            path:'/solutions/{solutionId}/recipe/{config_code}',
             handler: getCtl.fetchRecipe,
             config: { cors: true }
         },

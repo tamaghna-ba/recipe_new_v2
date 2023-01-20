@@ -4,9 +4,9 @@
 
 export const mongoQueryConstant = {
     settings: {
-        database: '',
         collection: '',
-        command: ''
+        command: '',
+        solutionId: '',
     },
     filter: {
         condition: {
@@ -17,5 +17,6 @@ export const mongoQueryConstant = {
             association_id: ''
         },
         project: {}
-    }
+    },
+    data: {}
 }
