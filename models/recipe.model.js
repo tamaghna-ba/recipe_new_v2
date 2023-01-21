@@ -1,5 +1,4 @@
 import { dbOperation } from '../helpers/factory.util';
-import classConfigBase from '../models/class-config-skeleton.model';
 import { removeEmpty } from "../helpers/feature.util";
 
 exports.getModel = {
@@ -13,10 +12,13 @@ exports.getModel = {
             }
         };
         // return new Promise((resolve, reject) => {});
-        return dbOperation(query, query.settings.command).then(result => {
-            return {message: 'Configuration details has been fetched successfully', status: 200, result};
+        return await dbOperation(query, query.settings.command).then(result => {
+            return {
+                message: 'Configuration details has been fetched successfully',
+                status: 200,
+                result
+            };
         }).catch(error => {
-            console.log(error);
             return {message: "Configuration details did not fetched!", status: 500, error};
         });
     }

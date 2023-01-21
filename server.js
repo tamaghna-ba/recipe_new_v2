@@ -1,6 +1,7 @@
 const Hapi = require('@hapi/hapi');
 import routes from './routes';
-
+import * as dotenv from 'dotenv'
+dotenv.config();
 const initServer = async () => {
     const server = Hapi.server({
         port: process.env.TV2_API_PORT,
