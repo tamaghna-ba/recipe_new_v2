@@ -1,6 +1,7 @@
 import { getValidate, postValidate } from '../controllers/validation.controller';
 import { getModel, postModel } from '../models/recipe.model';
 import { mongoQueryConstant } from "../helpers/constant.util";
+import { gChat } from '../logger/gchat.webhook';
 
 exports.getCtl = {
     fetchRecipe: async (request, cb) => {
@@ -14,7 +15,8 @@ exports.getCtl = {
                 if (response.mode) {
                     query.filter.condition = {...query.filter.condition, mode: response.mode};
                 }
-                return await getModel.fetchRecipe(query).then(dbResult => {
+                return await getModel.fetchRecipe(query).then(async dbResult => {
+                    gChat.sendWebHook();
                     return cb.response(dbResult).code(200);
                 }).catch(err => {
                     return cb.response(err).code(500);

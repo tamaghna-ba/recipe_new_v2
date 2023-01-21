@@ -13,11 +13,13 @@
     "@hapi/hapi": "^21.2.0",
     "@hapi/joi": "^17.1.1",
     "app-root-path": "^3.1.0",
+    "axios": "^1.2.3",
     "dotenv": "^16.0.3",
     "fs": "^0.0.1-security",
+    "google-chat-webhook": "^1.0.0",
     "mongodb": "^4.13.0",
     "mongoose": "^6.8.4",
-    "morgan": "^1.10.0"
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.20.7",
