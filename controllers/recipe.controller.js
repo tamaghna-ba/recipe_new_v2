@@ -1,12 +1,11 @@
 import { getValidate, postValidate } from '../controllers/validation.controller';
 import { getModel, postModel } from '../models/recipe.model';
 import { mongoQueryConstant } from "../helpers/constant.util";
-import { gChat } from '../logger/gchat.webhook';
 
 exports.getCtl = {
     fetchRecipe: async (request, cb) => {
         let query = JSON.parse(JSON.stringify(mongoQueryConstant));
-        return await getValidate.fetchRecipe(request).then(async response => {
+        return await getValidate.fetchRecipe(request).then( async response => {
             if (!response.error) {
                 query.settings = {...query.settings, solutionId: request.params.solutionId};
                 if (response.config_code) {
@@ -15,8 +14,7 @@ exports.getCtl = {
                 if (response.mode) {
                     query.filter.condition = {...query.filter.condition, mode: response.mode};
                 }
-                return await getModel.fetchRecipe(query).then(async dbResult => {
-                    gChat.sendWebHook();
+                return await getModel.fetchRecipe(query).then(dbResult => {
                     return cb.response(dbResult).code(200);
                 }).catch(err => {
                     return cb.response(err).code(500);
@@ -55,7 +53,9 @@ exports.postCtl = {
                 }
                 return await postModel.createRecipe(query).then(result => {
                     return cb.response(result).code(200);
-                })
+                }).catch(err => {
+                    return cb.response(err).code(500);
+                });
             }
         })
     }
