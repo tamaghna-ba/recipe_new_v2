@@ -9,12 +9,12 @@ exports.dbOperation = async (query, command) => {
                    .find({...query.filter.condition})
                    .project(query.project).toArray()
                    .then((result) => {
-                       mongodb.disconnect();
+                       // mongodb.disconnect();
                        return result;
                });
             case 'create':
                return await RecipeSchema.collection.insertOne(query.data).then((result) => {
-                   mongodb.disconnect();
+                   // mongodb.disconnect();
                    return result;
                });
             case 'update':
