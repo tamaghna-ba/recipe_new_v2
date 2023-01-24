@@ -14,6 +14,7 @@ exports.dbOperation = async (query, command) => {
             case 'create':
                 return model.create(query.data);
             case 'update':
+                return true;
         }
     });
 };
