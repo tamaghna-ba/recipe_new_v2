@@ -26,7 +26,7 @@ exports.getModel = {
                 result
             };
         }).catch(error => {
-            gChat.sendWebHook();
+            // gChat.sendWebHook();
             return {message: "Configuration details did not fetched!", status: 500, error};
         });
     }
@@ -43,7 +43,7 @@ exports.postModel = {
         return dbOperation(query, query.settings.command).then(result => {
             return {message: 'Configuration details has been saved successfully', status: 200, result};
         }).catch(error => {
-            gChat.sendWebHook();
+            // gChat.sendWebHook();
             return {message: "Configuration details did not saved!", status: 500, error};
         });
     }

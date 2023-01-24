@@ -3,6 +3,12 @@ import { getModel, postModel } from '../models/recipe.model';
 import { mongoQueryConstant } from "../helpers/constant.util";
 
 exports.getCtl = {
+    /**
+     * Fetch Recipe(s)
+     * @param request
+     * @param cb
+     * @returns {Promise<T>}
+     */
     fetchRecipe: async (request, cb) => {
         let query = JSON.parse(JSON.stringify(mongoQueryConstant));
         return await getValidate.fetchRecipe(request).then( async response => {
@@ -27,6 +33,12 @@ exports.getCtl = {
 };
 
 exports.postCtl = {
+    /**
+     * Create Recipe
+     * @param request
+     * @param cb
+     * @returns {Promise<T>}
+     */
     createRecipe: async (request, cb) => {
         let query = JSON.parse(JSON.stringify(mongoQueryConstant));
         return await postValidate.createRecipe(request).then(async response => {

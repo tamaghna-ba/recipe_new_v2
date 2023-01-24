@@ -1,13 +1,13 @@
 import { schemaTransporter } from './recipe.schema';
 
 /**
- *  DB queries based on command and filter condition
+ * Query action based on query input(condition and command)
  * @param query
  * @param command
- * @returns {Promise<T>}
+ * @returns {Promise<* | never>}
  */
 exports.dbOperation = async (query, command) => {
-    return await schemaTransporter(query.settings.solutionId).then((model) => {
+    return schemaTransporter(query.settings.solutionId).then((model) => {
         switch (command) {
             case 'fetch':
                 return model.find({...query.filter.condition});

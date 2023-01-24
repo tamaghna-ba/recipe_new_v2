@@ -1,6 +1,9 @@
 import utility from './helpers/feature.util';
 import { getCtl, postCtl } from './controllers/recipe.controller';
 
+/**
+ * API Endpoints
+ */
 const routes = function() {
     return [
         {
@@ -23,5 +26,6 @@ const routes = function() {
         }
     ]
 }();
+
 routes.map(utility.routerPrefixer.bind({}, "/v2"));
 module.exports = [...routes];
