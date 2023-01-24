@@ -1,10 +1,14 @@
 import mongoose from 'mongoose';
-const Schema = mongoose.Schema;
 import ClassInstance from './schema/class.schema';
 import AttributeInstance from './schema/attribute.schema';
 import AssociationInstance from './schema/association.schema';
+import { mongoConnect } from '../config/mongoose.config';
 
-let recipeSchema = new Schema({
+/**
+ * Defining schema object to be referenced
+ * @type {module:mongoose.Schema<any, Model<EnforcedDocType, any, any, any>, {}, {}, {}, {}, DefaultSchemaOptions, ApplySchemaOptions<ObtainDocumentType<any, EnforcedDocType, TSchemaOptions>, TSchemaOptions>> | Schema}
+ */
+const recipeSchema = new mongoose.Schema({
     config_name: {
         type: String
     },
@@ -56,4 +60,13 @@ let recipeSchema = new Schema({
     }
 }, { versionKey:false, collection: 'class_config' });
 
-module.exports = recipeSchema;
+/**
+ * Schema ORM MAPPER
+ * @param db
+ * @returns {Promise<void>}
+ */
+exports.schemaTransporter = async (db) => {
+    return mongoConnect(db).then( (connection) => {
+        return connection.model('RecipeSchema', recipeSchema)
+    })
+}

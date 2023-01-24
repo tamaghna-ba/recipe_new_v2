@@ -1,18 +1,19 @@
-import RecipeSchema from './recipe.schema';
-import mongoose from 'mongoose';
+import { schemaTransporter } from './recipe.schema';
 
+/**
+ *  DB queries based on command and filter condition
+ * @param query
+ * @param command
+ * @returns {Promise<T>}
+ */
 exports.dbOperation = async (query, command) => {
-    const conn = mongoose.createConnection(process.env.MONGO_CONNECTION_URL + '/' + query.settings.solutionId);
-    const model1 = conn.model('RecipeSchema', RecipeSchema);
-    switch(command) {
-        case 'fetch':
-            return await model1.find({...query.filter.condition});
-            // return await model1.create(query.data).then(() => {
-            //     return true;
-            // });
-        case 'create':
-            console.log(query.settings.solutionId, query.data);
-            return await model1.create(query.data);
-        case 'update':
-    }
+    return await schemaTransporter(query.settings.solutionId).then((model) => {
+        switch (command) {
+            case 'fetch':
+                return model.find({...query.filter.condition});
+            case 'create':
+                return model.create(query.data);
+            case 'update':
+        }
+    });
 };
