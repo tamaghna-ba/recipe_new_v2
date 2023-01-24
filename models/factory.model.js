@@ -1,23 +1,18 @@
 import RecipeSchema from './recipe.schema';
-import { mongoConnect } from '../config/mongoose.config';
+import mongoose from 'mongoose';
 
 exports.dbOperation = async (query, command) => {
-    return await mongoConnect(query.settings.solutionId).then(async (mongodb) => {
-        switch(command) {
-            case 'fetch':
-               return await RecipeSchema.collection
-                   .find({...query.filter.condition})
-                   .project(query.project).toArray()
-                   .then((result) => {
-                       // mongodb.disconnect();
-                       return result;
-               });
-            case 'create':
-               return await RecipeSchema.collection.insertOne(query.data).then((result) => {
-                   // mongodb.disconnect();
-                   return result;
-               });
-            case 'update':
-        }
-    });
+    const conn = mongoose.createConnection(process.env.MONGO_CONNECTION_URL + '/' + query.settings.solutionId);
+    const model1 = conn.model('RecipeSchema', RecipeSchema);
+    switch(command) {
+        case 'fetch':
+            return await model1.find({...query.filter.condition});
+            // return await model1.create(query.data).then(() => {
+            //     return true;
+            // });
+        case 'create':
+            console.log(query.settings.solutionId, query.data);
+            return await model1.create(query.data);
+        case 'update':
+    }
 };

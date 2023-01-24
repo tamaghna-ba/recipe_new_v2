@@ -24,10 +24,26 @@ let recipeSchema = new Schema({
         type: String
     },
     override: {
-        type: String
+        type: {
+            enable: {
+                type: Boolean
+            },
+            item_list: {
+                type: Object
+            }
+        }
     },
-    additional_info: {
-        type: String
+    additional_info:  {
+        type: [
+            {
+                type: {
+                    type: String
+                },
+                content: {
+                    type: String
+                }
+            }
+        ]
     },
     classes: [ClassInstance],
     attributes: [AttributeInstance],
@@ -38,6 +54,6 @@ let recipeSchema = new Schema({
     updated_on: {
         type: Date
     }
-}, { collection: 'class_config' });
+}, { versionKey:false, collection: 'class_config' });
 
-module.exports = mongoose.model('RecipeSchema', recipeSchema);
+module.exports = recipeSchema;
